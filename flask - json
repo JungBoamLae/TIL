@@ -2,7 +2,7 @@ from flask import Flask, render_template, jsonify
 app = Flask(__name__) 		
 
 @app.route("/") 		
-def hello_json():
+def hello_json(): ##json file return
     data = {'name': 'Mc Gregor', 'status': 'injury'}			
     return data
 

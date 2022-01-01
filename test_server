@@ -1,6 +1,6 @@
 import socket
 
-with socket.socket() as s:
+with socket.socket() as s:  #ip 0.0.0.0 server start
 	s.bind(("0.0.0.0",12345))
 	s.listen()
 	print("server is started")

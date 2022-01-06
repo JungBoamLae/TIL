@@ -1,0 +1,24 @@
+import psycopg2 as pc
+import pandas as pd
+
+dataReceive = request.get_json()
+
+df = get_data(dataReceive)
+
+def get_data(req_data):
+
+    try:
+      conn = pc.connect("dbname=디비이름 user=계정 password=암호")
+      curs = conn.cursor()
+      sql = "Select {0}, date, region_cd, {1} From 테이블이름 where {2} > 0 order by date".format(req_data['name'], fieldstr, req_data['name'])
+      df = pd.read_sql(sql, conn)
+      df.to_csv("/experiment/result.csv", encoding='utf-8', header = True, doublequote = True, sep=',', index=False)
+
+      print("CSV File has been created")
+      conn.close()
+
+    except Exception as error:
+      logger.warn("ERROR in get_data function")
+      logger.warn(error)
+
+    return df

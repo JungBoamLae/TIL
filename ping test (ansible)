@@ -1,0 +1,56 @@
+from flask import Flask
+import ansible_runner
+import sys
+import os
+import io
+import textfsm
+from tabulate import tabulate
+import psycopg2
+connection_uebot = "host='127.0.0.1' dbname ='uebot' user='postgres' password='1234'"
+
+app = Flask(__name__)
+
+@app.route('/')
+@app.route('/ping_check/<ip_address>')
+
+def ping_check(ip_address):
+
+    pid = os.getpid()
+    s = "1_rtrv_apn_inf"
+    #var_s = "{\"cmd_var\":\"./%s\r\n\"}"%(s)
+    var_s = "{\"cmd_var\":\"./%s\r\n\"}"%(s)
+    cmd = f"ping -c 3 {ip_address}"
+    log_file = f"/home/uebot/work/demo/1_rtrv_apn_inf_{pid}.log"
+    var_s = "{\"cmd_var\":\"%s\\r\\n\",\"log_var\":\"%s\"}"%(cmd,log_file)
+
+    #print("var_s : ", var_s)
+    out = ansible_runner.run_command(
+    executable_cmd='ansible-playbook',
+    cmdline_args=['ue_ping.yml', '-i', 'local_hosts','-e', var_s ],
+    input_fd=sys.stdin,
+    output_fd=sys.stdout,
+    error_fd=sys.stderr,
+    host_cwd='/home/uebot/work/demo'
+    )
+
+    file = str(f"/home/uebot/work/demo/1_rtrv_apn_inf_{pid}.log")
+    f = open(file, 'r');data = f.read();f.close()
+
+    check_true = "0% packet loss"
+    check_false = "Unreachable"
+
+    index = data.find(check_true)
+    #index = data.find(check_false)
+
+    print(f"ping_check = {index}")
+
+    if(index == -1):
+        return "False"
+    else: 
+        return "True"
+
+   # print( data)
+
+if __name__ == '__main__':
+# app.run(host='192.168.219.123',port=5000,debug = True)
+  ping_check("172.16.59.134")

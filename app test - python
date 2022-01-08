@@ -1,0 +1,46 @@
+from app import app
+import pytest
+
+# app.test_client를 반복사용하지 않아도 되도록 하기 위해 함수로 설정
+# client = app.test_client() 와 동일함
+@pytest.fixture
+def client():
+    return app.test_client()
+
+# 클라이언트의 요청 내용을 받기 위한 부분
+# 이 부분도 여러번 불필요하게 하지 않아도 되도록 함수로 설정
+def do_get(client, path):
+    response = client.get(path)
+    return response.status_code, str(response.data), response.get_json()
+
+# 메인 로직
+def test_home(client):
+    status_code, body, data = do_get(client, '/')
+    old_Count = data['count']
+
+    assert status_code == 200
+    assert '"text":"Hello, world"' in body
+
+    for i in range(5):
+        status_code, body, data = do_get(client, '/')
+        new_Count = data['count']
+
+        assert status_code == 200
+        assert new_Count == old_Count + i + 1
+
+def test_abuse(client):
+    status_code, body, data = do_get(client, '/')
+    old_Count = data['count']
+
+    assert status_code == 200
+
+    status_code, _, _ = do_get(client, '/abuse')
+
+    assert status_code == 200
+
+    status_code, body, data = do_get(client, '/')
+    new_Count = data['count']
+
+    assert status_code == 200
+    # 100을 더 추가로 올려주기
+    assert new_Count == old_Count + 1 + 100

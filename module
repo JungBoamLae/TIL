@@ -1,0 +1,37 @@
+import theater_module
+theater_module.price(3)
+theater_module.price_morning(4)
+theater_module.price_soldier(5)
+
+from re import X
+import theater_module as mv
+mv.price(3)
+mv.price_morning(4)
+mv.price_soldier(5)
+
+from theater_module import *
+price(3)
+price_morning(4)
+price_soldier(5)
+
+from theater_module import price, price_morning
+price(5)
+price_morning(6)
+price_soldier(7) -> X
+
+from theater_module import price_soldier as price
+price(5)
+
+//////////////////////
+theater_module.py
+# 일반 가격
+def price(people):
+    print("{0}명 가격은 {1}원입니다.".format(people, people * 10000))
+
+# 조조 할인 가격
+def price_morning(people):
+    print("{0}명 조조 할인 가격은 {1}원입니다.".format(people, people * 6000))
+
+# 군인 할인 가격
+def price_soldier(people):
+    print("{0}명 군인 할인 가격은 {1}원입니다.".format(people, people * 4000))

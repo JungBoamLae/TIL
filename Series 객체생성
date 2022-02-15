@@ -1,0 +1,7 @@
+import pandas as pd
+temp = pd.Series([-20, -10, 10, 20])
+temp
+temp[0] #1월 온도
+temp[2] #3월 온도
+temp = pd.Series([-20, -10, 10, 20]), index=['Jan','Feb','Mar','Apr']
+temp
